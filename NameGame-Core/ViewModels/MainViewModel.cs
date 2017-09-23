@@ -13,16 +13,31 @@ namespace WillowTree.NameGame.Core.ViewModels
 {
     public class MainViewModel : MvxViewModel
     {
-        private NameGameService _service;
+        private INameGameService _service;
 
-		public MainViewModel()
+		public MainViewModel(INameGameService service)
         {
-            _service = new NameGameService();
+            _service = service;
         }
 
         public override async void Start()
         {
             base.Start();
+            Profiles = await _service.GetProfiles();
         }
+
+        private Profile[] _profiles;
+
+        public Profile[] Profiles
+		{
+			get { return _profiles; }
+			set
+			{
+                _profiles = value;
+				RaisePropertyChanged(() => Profiles);
+			}
+		}
+
+
     }
 }

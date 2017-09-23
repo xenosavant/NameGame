@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace WillowTree.NameGame.Core.Models
 {
-	public class Profile
+    public class Profile
     {
 		[JsonProperty("id")]
 		public string Id { get; set; }

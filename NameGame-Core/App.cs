@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Platform;
+using MvvmCross.Platform.IoC;
 
 namespace WillowTree.NameGame.Core
 {
@@ -12,10 +13,11 @@ namespace WillowTree.NameGame.Core
     {
         public override void Initialize()
         {
-            Mvx.ConstructAndRegisterSingleton<IMvxAppStart, AppStart>();
-
-            var appStart = Mvx.Resolve<IMvxAppStart>();
-            RegisterAppStart(appStart);
+			CreatableTypes()
+				.EndingWith("Service")
+				.AsInterfaces()
+				.RegisterAsLazySingleton();
+            
         }
     }
 }
