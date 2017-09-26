@@ -10,6 +10,11 @@ using Android.Views;
 using Android.Widget;
 using MvvmCross.Binding.Droid.Views;
 using MvvmCross.Droid.Views;
+using WillowTree.NameGame.Core.ViewModels;
+using WillowTree.NameGame.Droid.Services;
+using WillowTree.NameGame.Core.Services;
+using WillowTree.NameGame.Core.Models;
+using MvvmCross.Platform;
 
 namespace WillowTree.NameGame.Droid
 {
@@ -19,8 +24,19 @@ namespace WillowTree.NameGame.Droid
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
             SetContentView(Resource.Layout.view_main);
         }
+
+        protected override void OnSaveInstanceState(Bundle outState)
+        {
+            base.OnSaveInstanceState(outState);
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+        }
+
+
     }
 }

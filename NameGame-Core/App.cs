@@ -17,7 +17,6 @@ namespace WillowTree.NameGame.Core
 				.EndingWith("Service")
 				.AsInterfaces()
 				.RegisterAsLazySingleton();
-            
         }
     }
 }

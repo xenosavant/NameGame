@@ -108,6 +108,12 @@ namespace WillowTree.NameGame.Droid
 			// aapt resource value: 0x7f040001
 			public const int MvxBindingTagUnique = 2130968577;
 			
+			// aapt resource value: 0x7f040002
+			public const int image = 2130968578;
+			
+			// aapt resource value: 0x7f040003
+			public const int name = 2130968579;
+			
 			static Id()
 			{
 				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
@@ -122,7 +128,10 @@ namespace WillowTree.NameGame.Droid
 		{
 			
 			// aapt resource value: 0x7f030000
-			public const int view_main = 2130903040;
+			public const int image_cell = 2130903040;
+			
+			// aapt resource value: 0x7f030001
+			public const int view_main = 2130903041;
 			
 			static Layout()
 			{

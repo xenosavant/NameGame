@@ -1,7 +1,15 @@
 using Android.Content;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Droid.Platform;
+using WillowTree.NameGame.Droid.CustomBindings;
 using WillowTree.NameGame.Core;
+using Android.Widget;
+using MvvmCross.Platform;
+using WillowTree.NameGame.Core.Services;
+using WillowTree.NameGame.Droid.Services;
+using MvvmCross.Binding.Bindings.Target.Construction;
+using MvvmCross.Binding.Droid.Target;
+using MvvmCross.Binding.Droid.Views;
 
 namespace WillowTree.NameGame.Droid
 {
@@ -10,11 +18,21 @@ namespace WillowTree.NameGame.Droid
         public Setup(Context applicationContext)
             : base(applicationContext)
         {
-
         }
+
+		protected override void FillTargetFactories(IMvxTargetBindingFactoryRegistry registry)
+		{
+            base.FillTargetFactories(registry);
+            registry.RegisterFactory(new MvxCustomBindingFactory<MvxImageView>("Image", (imageView) => new ImageBinding(imageView)));
+            //registry.RegisterFactory(new MvxCustomBindingFactory<MvxImageView>("Scale", (imageView) => new ViewScaleBinding(imageView)));
+            registry.RegisterFactory(new MvxCustomBindingFactory<FrameLayout>("Scale", (imageView) => new ViewScaleBinding(imageView)));
+        }
+
 
         protected override IMvxApplication CreateApp()
         {
+			Mvx.RegisterType<IImageService, ImageService>();
+            Mvx.LazyConstructAndRegisterSingleton<IDeviceService, DeviceService>();
             return new App();
         }
     }

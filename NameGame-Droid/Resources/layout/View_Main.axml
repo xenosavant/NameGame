@@ -4,5 +4,29 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    
+    <TextView
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        local:MvxBind="Text Prompt" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_weight="10">
+        <Mvx.MvxLinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            local:MvxItemTemplate="@layout/image_cell"
+            local:MvxBind="ItemsSource TopRow" />
+        <Mvx.MvxLinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            local:MvxItemTemplate="@layout/image_cell"
+            local:MvxBind="ItemsSource BottomRow" />
+    </LinearLayout>
 </LinearLayout>
