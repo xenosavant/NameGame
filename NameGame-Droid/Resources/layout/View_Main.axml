@@ -4,18 +4,34 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
+    <LinearLayout
         android:layout_height="0dp"
         android:layout_width="match_parent"
-        android:layout_weight="1"
-        local:MvxBind="Text Prompt" />
+        android:layout_weight="1">
+        <TextView
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            local:MvxBind="Text Prompt" />
+        <FrameLayout
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1">
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:gravity="center"
+                android:text="Reset"
+                local:MvxBind="Click ResetImages" />
+        </FrameLayout>
+    </LinearLayout>
     <LinearLayout
         android:orientation="vertical"
         android:layout_height="0dp"
         android:layout_width="match_parent"
         android:layout_weight="10">
         <Mvx.MvxLinearLayout
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal"
@@ -29,4 +45,16 @@
             local:MvxItemTemplate="@layout/image_cell"
             local:MvxBind="ItemsSource BottomRow" />
     </LinearLayout>
+    <FrameLayout
+        android:layout_gravity="center"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:background="#000000"
+        local:MvxBind="Visibility Visibility(Loading)">
+        <WebView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            local:MvxBind="Loading Loading" />
+    </FrameLayout>
 </LinearLayout>

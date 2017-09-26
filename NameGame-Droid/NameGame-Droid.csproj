@@ -125,11 +125,12 @@
     <Compile Include="Bootstrap\DownloadCachePluginBootstrap.cs" />
     <Compile Include="Bootstrap\VisibilityPluginBootstrap.cs" />
     <Compile Include="Bootstrap\ColorPluginBootstrap.cs" />
-    <Compile Include="CustomBindings\ImageBinding.cs" />
+    <Compile Include="CustomBindings\ImageSourceBinding.cs" />
     <Compile Include="Services\ImageService.cs" />
     <Compile Include="Services\DeviceService.cs" />
     <Compile Include="CustomBindings\ViewScaleBinding.cs" />
     <Compile Include="ValueConverters\AnswerColorValueConverter.cs" />
+    <Compile Include="CustomBindings\WebViewLoadingBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -160,6 +161,10 @@
     <Folder Include="Services\" />
     <Folder Include="Resources\layout\" />
     <Folder Include="ValueConverters\" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\loading.gif" />
+    <AndroidAsset Include="Assets\loading.html" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />

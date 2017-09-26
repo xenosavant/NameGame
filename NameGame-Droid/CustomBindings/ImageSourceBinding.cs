@@ -7,9 +7,9 @@ using System.IO;
 
 namespace WillowTree.NameGame.Droid.CustomBindings
 {
-    public class ImageBinding : MvxAndroidTargetBinding
+    public class ImageSourceBinding : MvxAndroidTargetBinding
     {
-        public ImageBinding(object target) : base(target)
+        public ImageSourceBinding(object target) : base(target)
         {   
 
         }

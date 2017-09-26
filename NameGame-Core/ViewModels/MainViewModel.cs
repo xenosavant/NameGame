@@ -12,7 +12,6 @@ using WillowTree.NameGame.Core.Services;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using MvvmCross.Platform;
-using WillowTree.NameGame.Core.Structures;
 
 namespace WillowTree.NameGame.Core.ViewModels
 {
@@ -28,57 +27,75 @@ namespace WillowTree.NameGame.Core.ViewModels
 
         public override async void Start()
         {
-            base.Start();
-            var profiles = await _service.GetProfiles();
-            Random rng = new Random();
-            var correctProfile = profiles[rng.Next(profiles.Length)];
-            Prompt = "Who is " + correctProfile.FullName + "?";
-            int selected = rng.Next(profiles.Length);
-            var profileDtoList = new ObservableCollection<ProfileCell>();
-            var deviceService = Mvx.Resolve<IDeviceService>();
-			var imageService = Mvx.Resolve<IImageService>();
-            int width = deviceService.GetDeviceWidth();
-            int height = deviceService.GetDeviceHeight();
-            int size;
-			if (width > height)
-			{
-				size = height / 3;
-			}
-			else size = width / 3;
-
-            for (int i = 0; i < profiles.Length; i++)
-            {
-                var profile = profiles[i];
-                var profileCell = new ProfileCell()
-                {
-                    FullName = profile.FullName,
-                    Correct = profile.Equals(correctProfile) ? true : false,
-                    Clicked = false,
-                    Size = new Scaling() { Width = size, Height = size }
-				};
-                    
-                var client = new HttpClient();
-                var imageResponse = await client.GetAsync("http:" + profile.Headshot.Url);
-                using (Stream stream = await imageResponse.Content.ReadAsStreamAsync())
-                using (MemoryStream memStream = new MemoryStream())
-                {
-                    stream.CopyTo(memStream);
-                    if (profile.Headshot.Width != profile.Headshot.Height)
-                        profileCell.Image = await imageService.CropImage(memStream.ToArray());
-                    else profileCell.Image = memStream.ToArray();
-				}
-                if (i < 2)
-                {
-                    TopRow.Add(profileCell);
-                }
-                else
-                {
-                    BottomRow.Add(profileCell);
-                }
-            }
+			base.Start();
+            LoadImages();
         }
 
-        private ObservableCollection<ProfileCell> _topRow = new ObservableCollection<ProfileCell>();
+        private async Task LoadImages(){
+            if (Loading)
+                return;
+            
+			Loading = true;
+
+			try
+			{
+
+                TopRow = new ObservableCollection<ProfileCell>();
+                BottomRow = new ObservableCollection<ProfileCell>();
+				var profiles = await _service.GetProfiles();
+				Random rng = new Random();
+				var correctProfile = profiles[rng.Next(profiles.Length)];
+				Prompt = "Who is " + correctProfile.FullName + "?";
+				int selected = rng.Next(profiles.Length);
+				var profileDtoList = new ObservableCollection<ProfileCell>();
+				var deviceService = Mvx.Resolve<IDeviceService>();
+				var imageService = Mvx.Resolve<IImageService>();
+				int width = deviceService.GetDeviceWidth();
+				int height = deviceService.GetDeviceHeight();
+				int size;
+				if (width > height)
+				{
+					size = height / 3;
+				}
+				else size = width / 3;
+
+				for (int i = 0; i < profiles.Length; i++)
+				{
+					var profile = profiles[i];
+					var profileCell = new ProfileCell()
+					{
+						FullName = profile.FullName,
+						Correct = profile.Equals(correctProfile) ? true : false,
+						Clicked = false,
+						Size = new Scaling() { Width = size, Height = size }
+					};
+
+					var client = new HttpClient();
+					var imageResponse = await client.GetAsync("http:" + profile.Headshot.Url);
+					using (Stream stream = await imageResponse.Content.ReadAsStreamAsync())
+					using (MemoryStream memStream = new MemoryStream())
+					{
+						stream.CopyTo(memStream);
+						if (profile.Headshot.Width != profile.Headshot.Height)
+							profileCell.Image = await imageService.CropImage(memStream.ToArray());
+						else profileCell.Image = memStream.ToArray();
+					}
+					if (i < 2)
+					{
+						TopRow.Add(profileCell);
+					}
+					else
+					{
+						BottomRow.Add(profileCell);
+					}
+				}
+			}
+			catch (Exception e) { }
+			finally { Loading = false; }
+
+        }
+
+        private ObservableCollection<ProfileCell> _topRow;
         public ObservableCollection<ProfileCell> TopRow
         {
             get { return _topRow; }
@@ -89,7 +106,7 @@ namespace WillowTree.NameGame.Core.ViewModels
             }
         }
 
-		private ObservableCollection<ProfileCell> _bottomRow = new ObservableCollection<ProfileCell>();
+        private ObservableCollection<ProfileCell> _bottomRow;
 		public ObservableCollection<ProfileCell> BottomRow
 		{
 			get { return _bottomRow; }
@@ -119,6 +136,25 @@ namespace WillowTree.NameGame.Core.ViewModels
 			{
 				SetProperty(ref _prompt, value);
 				RaisePropertyChanged(() => Prompt);
+			}
+		}
+
+        private bool _loading;
+		public bool Loading
+		{
+            get { return _loading; }
+			set
+			{
+				SetProperty(ref _loading, value);
+				RaisePropertyChanged(() => Loading);
+			}
+		}
+
+		public IMvxCommand ResetImages
+		{
+			get
+			{
+				return new MvxCommand(() => LoadImages());
 			}
 		}
     }

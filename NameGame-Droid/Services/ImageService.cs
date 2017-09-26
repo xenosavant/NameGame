@@ -39,10 +39,5 @@ namespace WillowTree.NameGame.Droid.Services
                 return stream.ToArray();
             }
         }
-
-        public byte[] ScaleImage(byte[] image, int pixels)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

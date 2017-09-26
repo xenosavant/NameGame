@@ -33,7 +33,6 @@ namespace WillowTree.NameGame.Droid.CustomBindings
 			if (view != null && value != null)
 			{
                 var scaling = (Scaling)value;
-                //view.LayoutParameters = new FrameLayout.LayoutParams((int)scaling.Width, (int)scaling.Height);
                 view.LayoutParameters.Width = scaling.Width;
                 view.LayoutParameters.Height = scaling.Height;
 			}

@@ -1,4 +1,5 @@
 using Android.Content;
+using Android.Webkit;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Droid.Platform;
 using WillowTree.NameGame.Droid.CustomBindings;
@@ -23,11 +24,10 @@ namespace WillowTree.NameGame.Droid
 		protected override void FillTargetFactories(IMvxTargetBindingFactoryRegistry registry)
 		{
             base.FillTargetFactories(registry);
-            registry.RegisterFactory(new MvxCustomBindingFactory<MvxImageView>("Image", (imageView) => new ImageBinding(imageView)));
-            //registry.RegisterFactory(new MvxCustomBindingFactory<MvxImageView>("Scale", (imageView) => new ViewScaleBinding(imageView)));
+            registry.RegisterFactory(new MvxCustomBindingFactory<MvxImageView>("Image", (imageView) => new ImageSourceBinding(imageView)));
             registry.RegisterFactory(new MvxCustomBindingFactory<FrameLayout>("Scale", (imageView) => new ViewScaleBinding(imageView)));
+            registry.RegisterFactory(new MvxCustomBindingFactory<WebView>("Loading", (imageView) => new WebViewLoadingBinding(imageView)));
         }
-
 
         protected override IMvxApplication CreateApp()
         {
