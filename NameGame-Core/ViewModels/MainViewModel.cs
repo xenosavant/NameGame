@@ -1,18 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using MvvmCross.Core.ViewModels;
 using WillowTree.NameGame.Core.Models;
 using WillowTree.NameGame.Core.Services;
 using System.Collections.ObjectModel;
 using System.Net.Http;
-using MvvmCross.Platform;
 
 namespace WillowTree.NameGame.Core.ViewModels
 {
@@ -29,7 +25,7 @@ namespace WillowTree.NameGame.Core.ViewModels
         private IImageService _imageService;
 
         // The current game mode
-		private Enumerations.GameModes _mode;
+        private Enumerations.GameModes _mode;
 
         // A list of the current ProfileCells
         private List<ProfileCell> _profileCells;
@@ -47,14 +43,15 @@ namespace WillowTree.NameGame.Core.ViewModels
 
         public override void Start()
         {
-			base.Start();
+            base.Start();
             _currentTask = StartGame(Enumerations.GameModes.Standard);
         }
 
-        private async Task StartGame(Enumerations.GameModes mode){
+        private async Task StartGame(Enumerations.GameModes mode)
+        {
 
             // Set the game mode
-			_mode = mode;
+            _mode = mode;
 
             // If already loading, return
             if (Loading)
@@ -65,10 +62,10 @@ namespace WillowTree.NameGame.Core.ViewModels
                 Error = false;
 
             // Set loading flag
-			Loading = true;
+            Loading = true;
 
-			try
-			{
+            try
+            {
                 // If this isn't the first run, recalculate the score
                 if (TopRow != null && BottomRow != null)
                     CalculateScore();
@@ -82,101 +79,102 @@ namespace WillowTree.NameGame.Core.ViewModels
                 var profiles = await _nameGameService.GetProfiles(5);
 
                 // Pick a random profile as the correct choice and set prompt
-				Random rng = new Random();
+                Random rng = new Random();
                 var correctProfile = profiles.ElementAt(rng.Next(profiles.Count()));
-				Prompt = "Who is " + correctProfile.FullName + "?";
+                Prompt = "Who is " + correctProfile.FullName + "?";
 
                 // Get the width and height for the current orientation and set
                 // the cell size to 1/3 the smaller dimension with some padding
-				int width = _deviceService.GetScreenWidth();
-				int height = _deviceService.GetScreenHeight();
-				int size;
-				if (width > height)
-				{
+                int width = _deviceService.GetScreenWidth();
+                int height = _deviceService.GetScreenHeight();
+                int size;
+                if (width > height)
+                {
                     size = (height - 40) / 3;
-				}
+                }
                 else size = (width - 40) / 3;
 
                 for (int i = 0; i < profiles.Count(); i++)
-				{
+                {
                     // Create a cell object from the profile
                     Profile profile = profiles.ElementAt(i);
-					var profileCell = new ProfileCell()
-					{
-						FullName = profile.FullName,
-						Correct = profile.Equals(correctProfile) ? true : false,
-						Clicked = false,
-						Size = new Scaling() { Width = size, Height = size },
+                    var profileCell = new ProfileCell()
+                    {
+                        FullName = profile.FullName,
+                        Correct = profile.Equals(correctProfile) ? true : false,
+                        Clicked = false,
+                        Size = new Scaling() { Width = size, Height = size },
                         Visible = true,
                         Index = i
-					};
+                    };
 
-					var client = new HttpClient();
+                    var client = new HttpClient();
 
                     // Start a new thread to process the image for each profile and await them
-					await Task.Run(async () =>
-					{
-						var imageResponse = await client.GetAsync("http:" + profile.Headshot.Url);
-						using (Stream stream = await imageResponse.Content.ReadAsStreamAsync())
-						using (MemoryStream memStream = new MemoryStream())
-						{
-							stream.CopyTo(memStream);
+                    await Task.Run(async () =>
+                    {
+                        var imageResponse = await client.GetAsync("http:" + profile.Headshot.Url);
+                        using (Stream stream = await imageResponse.Content.ReadAsStreamAsync())
+                        using (MemoryStream memStream = new MemoryStream())
+                        {
+                            stream.CopyTo(memStream);
 
                             // If the image is not square, crop with the imageService
-							if (profile.Headshot.Width != profile.Headshot.Height)
-								profileCell.Image = await _imageService.CropImage(memStream.ToArray());
-							else profileCell.Image = memStream.ToArray();
-						}
-					});
+                            if (profile.Headshot.Width != profile.Headshot.Height)
+                                profileCell.Image = await _imageService.CropImage(memStream.ToArray());
+                            else profileCell.Image = memStream.ToArray();
+                        }
+                    });
 
                     // Add the cells to the observable collection rows for view presentation
                     _profileCells.Add(profileCell);
-					if (i < 2)
-					{
-						TopRow.Add(profileCell);
-					}
-					else
-					{
-						BottomRow.Add(profileCell);
-					}
-				}
-			}
-			catch (Exception e) 
+                    if (i < 2)
+                    {
+                        TopRow.Add(profileCell);
+                    }
+                    else
+                    {
+                        BottomRow.Add(profileCell);
+                    }
+                }
+            }
+            catch (Exception e)
             {
                 // Catch any exceptions that occured and set the error flag to true
                 Debug.WriteLine(e.Message);
                 Error = true;
             }
-			finally {
+            finally
+            {
                 // Set loading to false and if we are in timed mode and no errors occured
                 // then start the timer again
-				Loading = false;
-				if (_mode == Enumerations.GameModes.Timed && !Error)
+                Loading = false;
+                if (_mode == Enumerations.GameModes.Timed && !Error)
                     await StartTimer();
             }
         }
 
-		void CalculateScore()
-		{
+        void CalculateScore()
+        {
             // Iterate though the cells and tabulate the answers
-			foreach (ProfileCell profile in _profileCells)
-			{
-				if (profile.Clicked)
-				{
+            foreach (ProfileCell profile in _profileCells)
+            {
+                if (profile.Clicked)
+                {
                     TotalAnswers++;
-					if (profile.Correct)
-						CorrectAnswers++;
-				}
-			}
+                    if (profile.Correct)
+                        CorrectAnswers++;
+                }
+            }
             // if any were answered calculate the score and update the ViewModel score value
             if (TotalAnswers > 0)
-			    PercentCorrect = ((float)CorrectAnswers / (float)TotalAnswers) * (float)100;
+                PercentCorrect = ((float)CorrectAnswers / (float)TotalAnswers) * (float)100;
             Score = String.Format("{0}% Correct", Math.Floor(PercentCorrect));
-		}
+        }
 
-		// See if there are more than 1 incorrect cells that are unselected and still visible.
-		// If so, remove a random one by setting it's Visible property to false
-		void RemoveItem()
+        // See if there are more than 1 incorrect cells that are unselected and still visible.
+        // If so, remove a random one by setting it's Visible property to false
+        void RemoveItem()
         {
             var possibleRemovals = _profileCells.Where(p => !p.Clicked && !p.Correct && p.Visible);
             if (possibleRemovals.Count() > 1)
@@ -207,130 +205,130 @@ namespace WillowTree.NameGame.Core.ViewModels
         }
 
         private ObservableCollection<ProfileCell> _bottomRow;
-		public ObservableCollection<ProfileCell> BottomRow
-		{
-			get { return _bottomRow; }
-			set
-			{
-				SetProperty(ref _bottomRow, value);
-				RaisePropertyChanged(() => BottomRow);
-			}
-		}
+        public ObservableCollection<ProfileCell> BottomRow
+        {
+            get { return _bottomRow; }
+            set
+            {
+                SetProperty(ref _bottomRow, value);
+                RaisePropertyChanged(() => BottomRow);
+            }
+        }
 
-		private ProfileCell _cell = new ProfileCell();
-		public ProfileCell Cell
-		{
+        private ProfileCell _cell = new ProfileCell();
+        public ProfileCell Cell
+        {
             get { return _cell; }
-			set
-			{
-				SetProperty(ref _cell, value);
-				RaisePropertyChanged(() => Cell);
-			}
-		}
+            set
+            {
+                SetProperty(ref _cell, value);
+                RaisePropertyChanged(() => Cell);
+            }
+        }
 
         private String _prompt;
-		public String Prompt
-		{
-			get { return _prompt; }
-			set
-			{
-				SetProperty(ref _prompt, value);
-				RaisePropertyChanged(() => Prompt);
-			}
-		}
+        public String Prompt
+        {
+            get { return _prompt; }
+            set
+            {
+                SetProperty(ref _prompt, value);
+                RaisePropertyChanged(() => Prompt);
+            }
+        }
 
-		private String _score;
-		public String Score
-		{
-			get { return _score; }
-			set
-			{
-				SetProperty(ref _score, value);
-				RaisePropertyChanged(() => Score);
-			}
-		}
+        private String _score;
+        public String Score
+        {
+            get { return _score; }
+            set
+            {
+                SetProperty(ref _score, value);
+                RaisePropertyChanged(() => Score);
+            }
+        }
 
         private bool _loading;
-		public bool Loading
-		{
+        public bool Loading
+        {
             get { return _loading; }
-			set
-			{
-				SetProperty(ref _loading, value);
-				RaisePropertyChanged(() => Loading);
-			}
-		}
+            set
+            {
+                SetProperty(ref _loading, value);
+                RaisePropertyChanged(() => Loading);
+            }
+        }
 
-		private bool _error;
-		public bool Error
-		{
-			get { return _error; }
-			set
-			{
-				SetProperty(ref _error, value);
-				RaisePropertyChanged(() => Error);
-			}
-		}
-
-
-
-		private int _correctAnswers;
-		public int CorrectAnswers
-		{
-			get { return _correctAnswers; }
-			set
-			{
-				SetProperty(ref _correctAnswers, value);
-				RaisePropertyChanged(() => CorrectAnswers);
-			}
-		}
-
-		private int _totalAnswers;
-		public int TotalAnswers
-		{
-			get { return _totalAnswers; }
-			set
-			{
-				SetProperty(ref _totalAnswers, value);
-				RaisePropertyChanged(() => TotalAnswers);
-			}
-		}
-
-		private float _percentCorrect;
-		public float PercentCorrect
-		{
-			get { return _percentCorrect; }
-			set
-			{
-				SetProperty(ref _percentCorrect, value);
-				RaisePropertyChanged(() => PercentCorrect);
-			}
-		}
+        private bool _error;
+        public bool Error
+        {
+            get { return _error; }
+            set
+            {
+                SetProperty(ref _error, value);
+                RaisePropertyChanged(() => Error);
+            }
+        }
 
 
-		public IMvxCommand Next
-		{
-			get
-			{
+
+        private int _correctAnswers;
+        public int CorrectAnswers
+        {
+            get { return _correctAnswers; }
+            set
+            {
+                SetProperty(ref _correctAnswers, value);
+                RaisePropertyChanged(() => CorrectAnswers);
+            }
+        }
+
+        private int _totalAnswers;
+        public int TotalAnswers
+        {
+            get { return _totalAnswers; }
+            set
+            {
+                SetProperty(ref _totalAnswers, value);
+                RaisePropertyChanged(() => TotalAnswers);
+            }
+        }
+
+        private float _percentCorrect;
+        public float PercentCorrect
+        {
+            get { return _percentCorrect; }
+            set
+            {
+                SetProperty(ref _percentCorrect, value);
+                RaisePropertyChanged(() => PercentCorrect);
+            }
+        }
+
+
+        public IMvxCommand Next
+        {
+            get
+            {
                 return new MvxCommand(() => GoToNext());
-			}
-		}
+            }
+        }
 
-		public IMvxCommand TimedMode
-		{
-			get
-			{
+        public IMvxCommand TimedMode
+        {
+            get
+            {
                 return new MvxCommand(() => _currentTask = StartGame(Enumerations.GameModes.Timed));
-			}
-		}
+            }
+        }
 
-		public IMvxCommand Hint
-		{
-			get
-			{
-				return new MvxCommand(() => RemoveItem());
-			}
-		}
+        public IMvxCommand Hint
+        {
+            get
+            {
+                return new MvxCommand(() => RemoveItem());
+            }
+        }
 
         // If the correct answer has been selected or there is an error or we are in timed mode
         // then restart the game in standard mode

@@ -3,8 +3,6 @@
 
 using System;
 using Android.Graphics;
-using Mono;
-using Java.Net;
 using WillowTree.NameGame.Core.Services;
 using System.IO;
 using System.Threading.Tasks;
@@ -29,8 +27,9 @@ namespace WillowTree.NameGame.Droid.Services
                 dstRect = new Rect(0, 0, sides, sides);
                 srcRect = new Rect((width - height) / 2, 0, ((width - height) / 2) + height, height);
             }
-			// If the image has a portrait aspect ratio, crop out a square from the top
-			else {
+            // If the image has a portrait aspect ratio, crop out a square from the top
+            else
+            {
                 sides = width;
                 dstRect = new Rect(0, 0, sides, sides);
                 srcRect = new Rect(0, 0, sides, sides);

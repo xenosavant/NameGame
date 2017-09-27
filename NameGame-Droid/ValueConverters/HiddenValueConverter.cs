@@ -1,5 +1,5 @@
 ﻿// This converter converts a boolean value into an Android view state,
-// returning a Gone state when true
+// returning a Gone state when true and Visible state when false
 
 using System;
 using Android.Graphics;
@@ -16,4 +16,3 @@ namespace WillowTree.NameGame.Droid.ValueConverters
         }
     }
 }
-    

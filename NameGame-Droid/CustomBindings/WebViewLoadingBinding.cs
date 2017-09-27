@@ -1,13 +1,8 @@
 ﻿// This Binding sets the view value for a webview to the loading gif asset
 
 using System;
-using System.IO;
 using MvvmCross.Binding;
 using MvvmCross.Binding.Droid.Target;
-using MvvmCross.Binding.Droid.Views;
-using WillowTree.NameGame.Core.Models;
-using Android.Graphics;
-using Android.Views;
 using Android.Webkit;
 
 namespace WillowTree.NameGame.Droid.CustomBindings

@@ -36,7 +36,5 @@ namespace WillowTree.NameGame.Droid
         {
             base.OnDestroy();
         }
-
-
     }
 }

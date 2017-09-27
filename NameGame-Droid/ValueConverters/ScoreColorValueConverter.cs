@@ -8,14 +8,14 @@ using MvvmCross.Platform.Converters;
 
 namespace WillowTree.NameGame.Droid.ValueConverters
 {
-	public class ScoreColorValueConverter : MvxValueConverter<float, Color>
-	{
-		private static readonly Color LowColor = new Color(0xFF, 0x00, 0x00);
-		private static readonly Color HighColor = new Color(0x00, 0xFF, 0x00);
+    public class ScoreColorValueConverter : MvxValueConverter<float, Color>
+    {
+        static readonly Color LowColor = new Color(0xFF, 0x00, 0x00);
+        static readonly Color HighColor = new Color(0x00, 0xFF, 0x00);
 
-		protected override Color Convert(float value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-		{
-			return value < 50.00 ? LowColor : HighColor;
-		}
-	}
+        protected override Color Convert(float value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return value < 50.00 ? LowColor : HighColor;
+        }
+    }
 }
