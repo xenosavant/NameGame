@@ -20,32 +20,34 @@ namespace WillowTree.NameGame.Core.Models
         public Scaling Size { get; set; }
 
         private bool _clicked;
-        public bool Clicked {
+        public bool Clicked
+        {
             get { return _clicked; }
-            set {
+            set
+            {
                 _clicked = value;
                 RaisePropertyChanged(() => Clicked);
             }
         }
 
-		private bool _visible;
-		public bool Visible
-		{
-			get { return _visible; }
-			set
-			{
-				_visible = value;
-				RaisePropertyChanged(() => Visible);
-			}
-		}
+        private bool _visible;
+        public bool Visible
+        {
+            get { return _visible; }
+            set
+            {
+                _visible = value;
+                RaisePropertyChanged(() => Visible);
+            }
+        }
 
-		public IMvxCommand ImageClick
-		{
-			get
-			{
+        public IMvxCommand ImageClick
+        {
+            get
+            {
                 return new MvxCommand(() => Clicked = true);
-			}
-		}
+            }
+        }
 
     }
 }

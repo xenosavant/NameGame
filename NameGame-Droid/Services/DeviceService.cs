@@ -3,11 +3,8 @@
 
 using System;
 using WillowTree.NameGame.Core.Services;
-using Xamarin.Android;
-using Android.Preferences;
 using Android.Util;
 using Android.Content.Res;
-using Android.Hardware;
 
 namespace WillowTree.NameGame.Droid.Services
 {
@@ -17,13 +14,13 @@ namespace WillowTree.NameGame.Droid.Services
 
         public int GetScreenWidth()
         {
-			return (int)metrics.WidthPixels;
+            return metrics.WidthPixels;
         }
 
-		public int GetScreenHeight()
-		{
-			return (int)metrics.HeightPixels;
-		}
+        public int GetScreenHeight()
+        {
+            return metrics.HeightPixels;
+        }
 
     }
 }
