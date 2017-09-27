@@ -1,7 +1,10 @@
-﻿using System;
+﻿// This converter converts a bool into a color:
+// 50% Transparent red for correct and
+// 50% Transparent green for incorrect
+
+using System;
 using Android.Graphics;
 using MvvmCross.Platform.Converters;
-
 
 namespace WillowTree.NameGame.Droid.ValueConverters
 {

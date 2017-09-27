@@ -1,4 +1,8 @@
-﻿using System;
+﻿// This class is uses to represent the size of a view in the layout.
+// It is used in the FrameScale Android binding to change the width and 
+// height of a FrameLayout
+
+using System;
 
 namespace WillowTree.NameGame.Core.Models
 {

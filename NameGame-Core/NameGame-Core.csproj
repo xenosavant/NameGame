@@ -46,7 +46,6 @@
     <Compile Include="Services\IImageService.cs" />
     <Compile Include="Services\IDeviceService.cs" />
     <Compile Include="Models\Scaling.cs" />
-    <Compile Include="Models\LoadingFlags.cs" />
     <Compile Include="Enumerations\Enumerations.cs" />
   </ItemGroup>
   <ItemGroup>

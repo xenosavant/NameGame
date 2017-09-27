@@ -1,11 +1,14 @@
-﻿using System;
+﻿// This class represents a single profile cell in the main view model
+// The profile image is dowloaded, cropped and stored in a byte array property
+
+using System;
 using MvvmCross.Core.ViewModels;
 
 namespace WillowTree.NameGame.Core.Models
 {
     public class ProfileCell : MvxNotifyPropertyChanged
     {
-        
+
         public string FullName { get; set; }
 
         public bool Correct { get; set; }
@@ -19,10 +22,10 @@ namespace WillowTree.NameGame.Core.Models
         private bool _clicked;
         public bool Clicked {
             get { return _clicked; }
-            set { 
+            set {
                 _clicked = value;
                 RaisePropertyChanged(() => Clicked);
-            } 
+            }
         }
 
 		private bool _visible;

@@ -13,6 +13,7 @@ namespace WillowTree.NameGame.Core
     {
         public override void Initialize()
         {
+            // Register services
 			CreatableTypes()
 				.EndingWith("Service")
 				.AsInterfaces()

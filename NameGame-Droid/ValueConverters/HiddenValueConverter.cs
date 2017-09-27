@@ -1,4 +1,7 @@
-﻿using System;
+﻿// This converter converts a boolean value into an Android view state,
+// returning a Gone state when true
+
+using System;
 using Android.Graphics;
 using MvvmCross.Platform.Converters;
 using Android.Views;

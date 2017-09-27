@@ -1,4 +1,7 @@
-﻿using System;
+﻿// This binding takes in a scaling parameter and sets the width and height of
+// a FrameLayout
+
+using System;
 using System.IO;
 using MvvmCross.Binding;
 using MvvmCross.Binding.Droid.Target;

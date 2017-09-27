@@ -1,4 +1,7 @@
-﻿using System;
+﻿// This implementation of the IImageService crops the image using an 
+// Android.Graphics canvas
+
+using System;
 using Android.Graphics;
 using Mono;
 using Java.Net;
@@ -12,24 +15,28 @@ namespace WillowTree.NameGame.Droid.Services
     {
         public async Task<byte[]> CropImage(byte[] image)
         {
+            // Decode the byte array to a bitmap for processing
             var bitmap = BitmapFactory.DecodeByteArray(image, 0, image.Length);
             var width = (int)bitmap.Width;
             var height = (int)bitmap.Height;
             Rect dstRect;
             Rect srcRect;
             int sides;
+            // If the image has a landscape aspect ratio, crop out the middle
             if (width > height)
             {
                 sides = height;
                 dstRect = new Rect(0, 0, sides, sides);
                 srcRect = new Rect((width - height) / 2, 0, ((width - height) / 2) + height, height);
             }
-            else {
+			// If the image has a portrait aspect ratio, crop out a square from the top
+			else {
                 sides = width;
                 dstRect = new Rect(0, 0, sides, sides);
                 srcRect = new Rect(0, 0, sides, sides);
             }
 
+            // crop out the selected rectangle, compress to a JPEG stream, and return the byte array
             using (Bitmap croppedImage = Bitmap.CreateBitmap(sides, sides, Bitmap.Config.Rgb565))
             using (MemoryStream stream = new MemoryStream())
             {

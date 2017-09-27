@@ -1,4 +1,6 @@
-﻿using System;
+﻿// This Binding sets the view value for a webview to the loading gif asset
+
+using System;
 using System.IO;
 using MvvmCross.Binding;
 using MvvmCross.Binding.Droid.Target;

@@ -132,6 +132,7 @@
     <Compile Include="ValueConverters\AnswerColorValueConverter.cs" />
     <Compile Include="CustomBindings\WebViewLoadingBinding.cs" />
     <Compile Include="ValueConverters\HiddenValueConverter.cs" />
+    <Compile Include="ValueConverters\ScoreColorValueConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

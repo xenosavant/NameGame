@@ -1,4 +1,7 @@
-﻿using System;
+﻿// This binding takes in an image byte aray and sets the view image ona
+// an MvxImageView
+
+using System;
 using MvvmCross.Binding;
 using MvvmCross.Binding.Droid.Target;
 using MvvmCross.Binding.Droid.Views;

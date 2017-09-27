@@ -21,13 +21,14 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_gravity="center"
+                android:textColor="#FFFFFF"
                 local:MvxBind="Text Prompt" />
             <TextView
                 android:layout_height="match_parent"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_gravity="center"
-                local:MvxBind="Text Score" />
+                local:MvxBind="Text Score; TextColor ScoreColor(PercentCorrect)" />
         </LinearLayout>
         <FrameLayout
             android:layout_height="match_parent"
@@ -39,7 +40,7 @@
                 android:layout_height="match_parent"
                 android:layout_width="match_parent"
                 android:textColor="@android:color/holo_red_dark"
-                android:text="An error has occured. Please reset" />
+                android:text="An error has occured. Please press Next to reset" />
         </FrameLayout>
         <LinearLayout
             android:layout_height="match_parent"
@@ -51,8 +52,8 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Reset"
-                local:MvxBind="Click Reset" />
+                android:text="Next"
+                local:MvxBind="Click Next" />
             <Button
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
@@ -73,7 +74,9 @@
         android:orientation="vertical"
         android:layout_height="0dp"
         android:layout_width="match_parent"
-        android:layout_weight="10">
+        android:layout_weight="10"
+        android:paddingRight="10px"
+        android:paddingLeft="10px">
         <Mvx.MvxLinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"

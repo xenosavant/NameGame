@@ -24,6 +24,7 @@ namespace WillowTree.NameGame.Droid
 		protected override void FillTargetFactories(IMvxTargetBindingFactoryRegistry registry)
 		{
             base.FillTargetFactories(registry);
+            // Register the custom bindings
             registry.RegisterFactory(new MvxCustomBindingFactory<MvxImageView>("ImageSource", (imageView) => new ImageSourceBinding(imageView)));
             registry.RegisterFactory(new MvxCustomBindingFactory<FrameLayout>("Scale", (imageView) => new FrameScaleBinding(imageView)));
             registry.RegisterFactory(new MvxCustomBindingFactory<WebView>("LoadingView", (imageView) => new WebViewLoadingBinding(imageView)));
@@ -31,7 +32,8 @@ namespace WillowTree.NameGame.Droid
 
         protected override IMvxApplication CreateApp()
         {
-			Mvx.RegisterType<IImageService, ImageService>();
+            // Register the platform dependencies
+			Mvx.LazyConstructAndRegisterSingleton<IImageService, ImageService>();
             Mvx.LazyConstructAndRegisterSingleton<IDeviceService, DeviceService>();
             return new App();
         }
