@@ -44,14 +44,14 @@ namespace WillowTree.NameGame.Core.Services
             }
 
             // Fill a new array with random elements from the profile set and return it.
-            var returnArray = new List<Profile>();
+            var returnList = new List<Profile>();
             var indexArray = indexList.ToArray();
             for (int i = 0; i < numberOfProfiles; i++)
             {
-                returnArray.Add(profiles.ElementAt(indexArray[i]));
+                returnList.Add(profiles.ElementAt(indexArray[i]));
             }
 
-            return returnArray;
+            return returnList;
         }
     }
 }

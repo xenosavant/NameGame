@@ -105,7 +105,6 @@ namespace WillowTree.NameGame.Core.ViewModels
                         Clicked = false,
                         Size = new Scaling() { Width = size, Height = size },
                         Visible = true,
-                        Index = i
                     };
 
                     var client = new HttpClient();

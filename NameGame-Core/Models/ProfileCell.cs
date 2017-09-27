@@ -13,8 +13,6 @@ namespace WillowTree.NameGame.Core.Models
 
         public bool Correct { get; set; }
 
-        public int Index { get; set; }
-
         public byte[] Image { get; set; }
 
         public Scaling Size { get; set; }

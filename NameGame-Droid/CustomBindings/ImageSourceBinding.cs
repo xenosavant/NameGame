@@ -1,4 +1,4 @@
-﻿// This binding takes in an image byte aray and sets the view image ona
+﻿// This binding takes in an image byte aray and sets the view image on
 // an MvxImageView
 
 using System;
