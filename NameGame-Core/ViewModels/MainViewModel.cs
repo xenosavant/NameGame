@@ -3,8 +3,9 @@ using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using MvvmCross.Core.ViewModels;
 using WillowTree.NameGame.Core.Models;
@@ -20,6 +21,12 @@ namespace WillowTree.NameGame.Core.ViewModels
 
         private INameGameService _service;
 
+		private Enumerations.GameModes _mode;
+
+        private List<ProfileCell> _profileCells;
+
+        private Task _currentTask;
+
         public MainViewModel(INameGameService service)
         {
             _service = service;
@@ -28,20 +35,27 @@ namespace WillowTree.NameGame.Core.ViewModels
         public override async void Start()
         {
 			base.Start();
-            LoadImages();
+            _currentTask = StartGame(Enumerations.GameModes.Standard);
         }
 
-        private async Task LoadImages(){
+        private async Task StartGame(Enumerations.GameModes mode){
+
+			_mode = mode;
+
             if (Loading)
                 return;
-            
+            if (Error)
+                Error = false;
+
 			Loading = true;
 
 			try
 			{
-
+                if (TopRow != null && BottomRow != null)
+                    CalculateScore();
                 TopRow = new ObservableCollection<ProfileCell>();
                 BottomRow = new ObservableCollection<ProfileCell>();
+                _profileCells = new List<ProfileCell>();
 				var profiles = await _service.GetProfiles();
 				Random rng = new Random();
 				var correctProfile = profiles[rng.Next(profiles.Length)];
@@ -55,9 +69,9 @@ namespace WillowTree.NameGame.Core.ViewModels
 				int size;
 				if (width > height)
 				{
-					size = height / 3;
+                    size = (height - 40) / 3;
 				}
-				else size = width / 3;
+                else size = (width - 40) / 3;
 
 				for (int i = 0; i < profiles.Length; i++)
 				{
@@ -67,7 +81,9 @@ namespace WillowTree.NameGame.Core.ViewModels
 						FullName = profile.FullName,
 						Correct = profile.Equals(correctProfile) ? true : false,
 						Clicked = false,
-						Size = new Scaling() { Width = size, Height = size }
+						Size = new Scaling() { Width = size, Height = size },
+                        Visible = true,
+                        Index = i
 					};
 
 					var client = new HttpClient();
@@ -80,6 +96,7 @@ namespace WillowTree.NameGame.Core.ViewModels
 							profileCell.Image = await imageService.CropImage(memStream.ToArray());
 						else profileCell.Image = memStream.ToArray();
 					}
+                    _profileCells.Add(profileCell);
 					if (i < 2)
 					{
 						TopRow.Add(profileCell);
@@ -90,9 +107,50 @@ namespace WillowTree.NameGame.Core.ViewModels
 					}
 				}
 			}
-			catch (Exception e) { }
-			finally { Loading = false; }
+			catch (Exception e) 
+            {
+                Debug.WriteLine(e.Message);
+                Error = true;
+            }
+			finally {
+				Loading = false;
+				if (_mode == Enumerations.GameModes.Timed && !Error)
+                    await StartTimer();
+            }
+        }
 
+		void CalculateScore()
+		{
+            var profiles = TopRow.Concat(BottomRow).ToList();
+			foreach (ProfileCell profile in profiles)
+			{
+				if (profile.Clicked)
+				{
+                    TotalAnswers++;
+					if (profile.Correct)
+						CorrectAnswers++;
+				}
+			}
+            if (TotalAnswers > 0)
+			    PercentCorrect = ((float)CorrectAnswers / (float)TotalAnswers) * (float)100;
+            Score = String.Format("{0}% Correct", Math.Floor(PercentCorrect));
+		}
+
+        void RemoveItem()
+        {
+            var possibleRemovals = _profileCells.Where(p => !p.Clicked && !p.Correct && p.Visible);
+            if (possibleRemovals.Count() > 0)
+            {
+                var rng = new Random();
+                possibleRemovals.ElementAt(rng.Next(possibleRemovals.Count())).Visible = false;
+            }
+        }
+
+        async Task StartTimer()
+        {
+            await Task.Delay(TimeSpan.FromSeconds(2 + ((100 - PercentCorrect) / 20)));
+            if (_mode == Enumerations.GameModes.Timed && !Error)
+                _currentTask = StartGame(Enumerations.GameModes.Timed);
         }
 
         private ObservableCollection<ProfileCell> _topRow;
@@ -139,6 +197,17 @@ namespace WillowTree.NameGame.Core.ViewModels
 			}
 		}
 
+		private String _score;
+		public String Score
+		{
+			get { return _score; }
+			set
+			{
+				SetProperty(ref _score, value);
+				RaisePropertyChanged(() => Score);
+			}
+		}
+
         private bool _loading;
 		public bool Loading
 		{
@@ -150,12 +219,81 @@ namespace WillowTree.NameGame.Core.ViewModels
 			}
 		}
 
-		public IMvxCommand ResetImages
+		private bool _error;
+		public bool Error
+		{
+			get { return _error; }
+			set
+			{
+				SetProperty(ref _error, value);
+				RaisePropertyChanged(() => Error);
+			}
+		}
+
+
+
+		private int _correctAnswers;
+		public int CorrectAnswers
+		{
+			get { return _correctAnswers; }
+			set
+			{
+				SetProperty(ref _correctAnswers, value);
+				RaisePropertyChanged(() => CorrectAnswers);
+			}
+		}
+
+		private int _totalAnswers;
+		public int TotalAnswers
+		{
+			get { return _totalAnswers; }
+			set
+			{
+				SetProperty(ref _totalAnswers, value);
+				RaisePropertyChanged(() => TotalAnswers);
+			}
+		}
+
+		private float _percentCorrect;
+		public float PercentCorrect
+		{
+			get { return _percentCorrect; }
+			set
+			{
+				SetProperty(ref _percentCorrect, value);
+				RaisePropertyChanged(() => PercentCorrect);
+			}
+		}
+
+
+		public IMvxCommand Reset
 		{
 			get
 			{
-				return new MvxCommand(() => LoadImages());
+                return new MvxCommand(() => GoToNext());
 			}
 		}
+
+		public IMvxCommand TimedMode
+		{
+			get
+			{
+                return new MvxCommand(() => _currentTask = StartGame(Enumerations.GameModes.Timed));
+			}
+		}
+
+		public IMvxCommand Hint
+		{
+			get
+			{
+				return new MvxCommand(() => RemoveItem());
+			}
+		}
+
+        private void GoToNext()
+        {
+            if (_profileCells.Where(p => p.Clicked && p.Correct).Any() || Error || _mode == Enumerations.GameModes.Timed)
+                _currentTask = StartGame(Enumerations.GameModes.Standard);
+        }
     }
 }

@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            local:MvxBind="Image Image; Click ImageClick" />
+            local:MvxBind="ImageSource Image; Click ImageClick; Visibility Visibility(Visible)" />
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

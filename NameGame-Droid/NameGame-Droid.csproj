@@ -128,9 +128,10 @@
     <Compile Include="CustomBindings\ImageSourceBinding.cs" />
     <Compile Include="Services\ImageService.cs" />
     <Compile Include="Services\DeviceService.cs" />
-    <Compile Include="CustomBindings\ViewScaleBinding.cs" />
+    <Compile Include="CustomBindings\FrameScaleBinding.cs" />
     <Compile Include="ValueConverters\AnswerColorValueConverter.cs" />
     <Compile Include="CustomBindings\WebViewLoadingBinding.cs" />
+    <Compile Include="ValueConverters\HiddenValueConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

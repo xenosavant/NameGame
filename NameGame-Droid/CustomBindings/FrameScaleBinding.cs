@@ -10,9 +10,9 @@ using Android.Widget;
 
 namespace WillowTree.NameGame.Droid.CustomBindings
 {
-	public class ViewScaleBinding : MvxAndroidTargetBinding
+	public class FrameScaleBinding : MvxAndroidTargetBinding
 	{
-		public ViewScaleBinding(object target) : base(target)
+		public FrameScaleBinding(object target) : base(target)
 		{
 
 		}

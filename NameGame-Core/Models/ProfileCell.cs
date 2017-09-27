@@ -10,16 +10,11 @@ namespace WillowTree.NameGame.Core.Models
 
         public bool Correct { get; set; }
 
-		private byte [] _image;
-		public byte[] Image
-		{
-			get { return _image; }
-			set
-			{
-				_image = value;
-				RaisePropertyChanged(() => Image);
-			}
-		}
+        public int Index { get; set; }
+
+        public byte[] Image { get; set; }
+
+        public Scaling Size { get; set; }
 
         private bool _clicked;
         public bool Clicked {
@@ -30,14 +25,14 @@ namespace WillowTree.NameGame.Core.Models
             } 
         }
 
-		private Scaling _size;
-		public Scaling Size
+		private bool _visible;
+		public bool Visible
 		{
-			get { return _size; }
+			get { return _visible; }
 			set
 			{
-				_size = value;
-				RaisePropertyChanged(() => Size);
+				_visible = value;
+				RaisePropertyChanged(() => Visible);
 			}
 		}
 

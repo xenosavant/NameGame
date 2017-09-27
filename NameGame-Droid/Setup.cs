@@ -24,9 +24,9 @@ namespace WillowTree.NameGame.Droid
 		protected override void FillTargetFactories(IMvxTargetBindingFactoryRegistry registry)
 		{
             base.FillTargetFactories(registry);
-            registry.RegisterFactory(new MvxCustomBindingFactory<MvxImageView>("Image", (imageView) => new ImageSourceBinding(imageView)));
-            registry.RegisterFactory(new MvxCustomBindingFactory<FrameLayout>("Scale", (imageView) => new ViewScaleBinding(imageView)));
-            registry.RegisterFactory(new MvxCustomBindingFactory<WebView>("Loading", (imageView) => new WebViewLoadingBinding(imageView)));
+            registry.RegisterFactory(new MvxCustomBindingFactory<MvxImageView>("ImageSource", (imageView) => new ImageSourceBinding(imageView)));
+            registry.RegisterFactory(new MvxCustomBindingFactory<FrameLayout>("Scale", (imageView) => new FrameScaleBinding(imageView)));
+            registry.RegisterFactory(new MvxCustomBindingFactory<WebView>("LoadingView", (imageView) => new WebViewLoadingBinding(imageView)));
         }
 
         protected override IMvxApplication CreateApp()

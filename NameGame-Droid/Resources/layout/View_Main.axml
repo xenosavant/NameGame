@@ -7,23 +7,67 @@
     <LinearLayout
         android:layout_height="0dp"
         android:layout_width="match_parent"
-        android:layout_weight="1">
-        <TextView
+        android:orientation="horizontal"
+        android:layout_weight="2">
+        <LinearLayout
             android:layout_height="match_parent"
             android:layout_width="0dp"
             android:layout_weight="2"
-            local:MvxBind="Text Prompt" />
+            android:paddingLeft="10dp"
+            android:orientation="horizontal"
+            local:MvxBind="Visibility Hidden(Error)">
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                local:MvxBind="Text Prompt" />
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                local:MvxBind="Text Score" />
+        </LinearLayout>
         <FrameLayout
             android:layout_height="match_parent"
             android:layout_width="0dp"
-            android:layout_weight="1">
+            android:layout_weight="2"
+            android:paddingLeft="10dp"
+            local:MvxBind="Visibility Visibility(Error)">
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:textColor="@android:color/holo_red_dark"
+                android:text="An error has occured. Please reset" />
+        </FrameLayout>
+        <LinearLayout
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:paddingRight="10dp">
             <Button
                 android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="Reset"
-                local:MvxBind="Click ResetImages" />
-        </FrameLayout>
+                local:MvxBind="Click Reset" />
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Hint"
+                local:MvxBind="Click Hint" />
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Timed"
+                local:MvxBind="Click TimedMode" />
+        </LinearLayout>
     </LinearLayout>
     <LinearLayout
         android:orientation="vertical"
@@ -55,6 +99,6 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:layout_gravity="center"
-            local:MvxBind="Loading Loading" />
+            local:MvxBind="LoadingView Loading" />
     </FrameLayout>
 </LinearLayout>
