@@ -131,7 +131,10 @@ namespace WillowTree.NameGame.Droid
 			public const int image_cell = 2130903040;
 			
 			// aapt resource value: 0x7f030001
-			public const int view_main = 2130903041;
+			public const int image_row = 2130903041;
+			
+			// aapt resource value: 0x7f030002
+			public const int view_main = 2130903042;
 			
 			static Layout()
 			{
@@ -158,6 +161,22 @@ namespace WillowTree.NameGame.Droid
 			}
 			
 			private String()
+			{
+			}
+		}
+		
+		public partial class Style
+		{
+			
+			// aapt resource value: 0x7f060000
+			public const int MainTheme = 2131099648;
+			
+			static Style()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Style()
 			{
 			}
 		}

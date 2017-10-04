@@ -9,6 +9,8 @@ using WillowTree.NameGame.Core.Models;
 using WillowTree.NameGame.Core.Services;
 using System.Collections.ObjectModel;
 using System.Net.Http;
+using System.Collections.Concurrent;
+using System.Threading;
 
 namespace WillowTree.NameGame.Core.ViewModels
 {
@@ -28,7 +30,7 @@ namespace WillowTree.NameGame.Core.ViewModels
         private Enumerations.GameModes _mode;
 
         // A list of the current ProfileCells
-        private List<ProfileCell> _profileCells;
+        private ConcurrentBag<ProfileCell> _profileCells;
 
         // The currently running Task
         private Task _currentTask;
@@ -44,6 +46,7 @@ namespace WillowTree.NameGame.Core.ViewModels
         public override void Start()
         {
             base.Start();
+            _totalCells = 6;
             _currentTask = StartGame(Enumerations.GameModes.Standard);
         }
 
@@ -67,16 +70,16 @@ namespace WillowTree.NameGame.Core.ViewModels
             try
             {
                 // If this isn't the first run, recalculate the score
-                if (TopRow != null && BottomRow != null)
+                if (PortraitRows != null && LandscapeRows != null)
                     CalculateScore();
 
                 // Initalize collections
-                TopRow = new ObservableCollection<ProfileCell>();
-                BottomRow = new ObservableCollection<ProfileCell>();
-                _profileCells = new List<ProfileCell>();
+                PortraitRows = new ObservableCollection<ProfileRow>();
+                LandscapeRows = new ObservableCollection<ProfileRow>();
+                _profileCells = new ConcurrentBag<ProfileCell>();
 
                 // Get the 5 profiles from the service
-                var profiles = await _nameGameService.GetProfiles(5);
+                var profiles = await _nameGameService.GetProfiles(_totalCells);
 
                 // Pick a random profile as the correct choice and set prompt
                 Random rng = new Random();
@@ -85,14 +88,20 @@ namespace WillowTree.NameGame.Core.ViewModels
 
                 // Get the width and height for the current orientation and set
                 // the cell size to 1/3 the smaller dimension with some padding
-                int width = _deviceService.GetScreenWidth();
-                int height = _deviceService.GetScreenHeight();
-                int size;
-                if (width > height)
-                {
-                    size = (height - 40) / 3;
-                }
-                else size = (width - 40) / 3;
+                int rows = 2;
+                int columns = SetRowsAndColumns(ref rows);
+                double width = _deviceService.GetScreenWidth();
+                double height = _deviceService.GetScreenHeight();
+                double size;
+                double longerDimension = width > height ? width : height;
+                double smallerDimension = width > height ? height : width;
+                double usableRegionLonger = longerDimension - (((double)columns + 1.0) * 10.0) - (0.2 * longerDimension);
+                double usableRegionSmaller = smallerDimension -  (((double)rows + 1.0) * 10.0) - (0.2 * smallerDimension);
+                size = usableRegionLonger / (double)columns;
+                if ((usableRegionSmaller / (double)rows) < size)
+                    size = usableRegionSmaller / (double)rows;
+                
+				var client = new HttpClient();
 
                 for (int i = 0; i < profiles.Count(); i++)
                 {
@@ -103,16 +112,15 @@ namespace WillowTree.NameGame.Core.ViewModels
                         FullName = profile.FullName,
                         Correct = profile.Equals(correctProfile) ? true : false,
                         Clicked = false,
-                        Size = new Scaling() { Width = size, Height = size },
+                        Size = new Scaling() { Width = (int)size, Height = (int)size },
                         Visible = true,
                     };
 
-                    var client = new HttpClient();
+					var imageResponse = await client.GetAsync("http:" + profile.Headshot.Url);
 
                     // Start a new thread to process the image for each profile and await them
                     await Task.Run(async () =>
                     {
-                        var imageResponse = await client.GetAsync("http:" + profile.Headshot.Url);
                         using (Stream stream = await imageResponse.Content.ReadAsStreamAsync())
                         using (MemoryStream memStream = new MemoryStream())
                         {
@@ -125,17 +133,32 @@ namespace WillowTree.NameGame.Core.ViewModels
                         }
                     });
 
-                    // Add the cells to the observable collection rows for view presentation
+                    // Add the cells to the concurrent bag rows for view presentation
                     _profileCells.Add(profileCell);
-                    if (i < 2)
-                    {
-                        TopRow.Add(profileCell);
-                    }
-                    else
-                    {
-                        BottomRow.Add(profileCell);
-                    }
                 }
+
+                for (int row = 0; row < rows; row++){
+                    var currentRow = new ProfileRow();
+                    for (int col = 0; col < columns; col++)
+                    {
+                        currentRow.Cells.Add(_profileCells.ElementAt((row * columns) + col));
+                    }
+                    LandscapeRows.Add(currentRow);
+                }
+
+                var temp = rows;
+                rows = columns;
+                columns = temp;
+
+				for (int row = 0; row < rows; row++)
+				{
+					var currentRow = new ProfileRow();
+					for (int col = 0; col < columns; col++)
+					{
+						currentRow.Cells.Add(_profileCells.ElementAt((row * columns) + col));
+					}
+					PortraitRows.Add(currentRow);
+				}
             }
             catch (Exception e)
             {
@@ -192,25 +215,62 @@ namespace WillowTree.NameGame.Core.ViewModels
                 _currentTask = StartGame(Enumerations.GameModes.Timed);
         }
 
-        private ObservableCollection<ProfileCell> _topRow;
-        public ObservableCollection<ProfileCell> TopRow
+        int SetRowsAndColumns(ref int rows) {
+            var cellPlaces = _totalCells;
+            if (IsPrime(_totalCells))
+                cellPlaces++;
+            var startingColumns = cellPlaces / rows;
+            var currentColumns = startingColumns;
+            var currentRows = rows;
+            var columns = currentColumns;
+            var barrier = Math.Sqrt(cellPlaces);
+            while (currentRows < barrier)
+            {
+                currentColumns = cellPlaces / currentRows;
+                if (cellPlaces % currentRows == 0)
+                {
+                    rows = currentRows;
+                    columns = currentColumns;
+                }
+				currentRows += 1;
+            }
+            return columns;
+        }
+
+        bool IsPrime(int number){
+            if (number == 1)
+                return false;
+            if (number == 2)
+                return true;
+
+            var boundary = Math.Sqrt(number);
+            for (int i = 3; i < boundary; i+=2)
+            {
+                if (number % i == 0)
+                    return false;
+            }
+            return true;
+        }
+
+        private ObservableCollection<ProfileRow> _portraitRows;
+        public ObservableCollection<ProfileRow> PortraitRows
         {
-            get { return _topRow; }
+            get { return _portraitRows; }
             set
             {
-                SetProperty(ref _topRow, value);
-                RaisePropertyChanged(() => TopRow);
+                SetProperty(ref _portraitRows, value);
+                RaisePropertyChanged(() => PortraitRows);
             }
         }
 
-        private ObservableCollection<ProfileCell> _bottomRow;
-        public ObservableCollection<ProfileCell> BottomRow
+        private ObservableCollection<ProfileRow> _landscapeRows;
+        public ObservableCollection<ProfileRow> LandscapeRows
         {
-            get { return _bottomRow; }
+            get { return _landscapeRows; }
             set
             {
-                SetProperty(ref _bottomRow, value);
-                RaisePropertyChanged(() => BottomRow);
+                SetProperty(ref _landscapeRows, value);
+                RaisePropertyChanged(() => LandscapeRows);
             }
         }
 
@@ -303,6 +363,20 @@ namespace WillowTree.NameGame.Core.ViewModels
                 RaisePropertyChanged(() => PercentCorrect);
             }
         }
+
+		private int  _totalCells;
+
+		private int _userInput = 0;
+		public int UserInput
+		{
+			get { return _userInput; }
+			set
+			{
+				SetProperty(ref _userInput, value);
+                _totalCells = UserInput + 6;
+				RaisePropertyChanged(() => UserInput);
+			}
+		}
 
 
         public IMvxCommand Next

@@ -18,7 +18,7 @@ using MvvmCross.Platform;
 
 namespace WillowTree.NameGame.Droid
 {
-    [Activity(Label = "NameGame", MainLauncher = true, Icon = "@drawable/icon")]
+    [Activity(MainLauncher = true, Theme = "@style/MainTheme")]
     public class MainView : MvxActivity
     {
         protected override void OnCreate(Bundle savedInstanceState)

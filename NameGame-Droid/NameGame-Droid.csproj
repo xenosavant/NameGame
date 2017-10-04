@@ -138,10 +138,17 @@
     <None Include="packages.config" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
-    <AndroidResource Include="Resources\layout\image_cell.axml" />
-    <AndroidResource Include="Resources\layout\view_main.axml">
+    <AndroidResource Include="Resources\layout-port\image_cell.axml" />
+    <AndroidResource Include="Resources\layout-port\view_main.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\layout-port\image_row.axml" />
+    <AndroidResource Include="Resources\layout-land\image_cell.axml" />
+    <AndroidResource Include="Resources\layout-land\image_row.axml" />
+    <AndroidResource Include="Resources\layout-land\view_main.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\values-v21\styles.xml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />
@@ -161,8 +168,10 @@
   <ItemGroup>
     <Folder Include="CustomBindings\" />
     <Folder Include="Services\" />
-    <Folder Include="Resources\layout\" />
+    <Folder Include="Resources\layout-port\" />
     <Folder Include="ValueConverters\" />
+    <Folder Include="Resources\layout-land\" />
+    <Folder Include="Resources\values-v21\" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\loading.gif" />

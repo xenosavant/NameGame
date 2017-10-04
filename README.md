@@ -6,7 +6,7 @@ This is the standard NameGame with a few modifications. I implemented the app in
 
 The app allows the user to get hints by pushing the "Hint" button. This removes one of the wrong choices until only two remain.
 
-The app tracks the user's score as the percentage of correct answers out of their total guesses.
+The app tracks the user's score as the percentage of correct answers out of the total guesses.
 
 The app has two game modes: standard and timed.
 
