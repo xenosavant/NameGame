@@ -137,28 +137,9 @@ namespace WillowTree.NameGame.Core.ViewModels
                     _profileCells.Add(profileCell);
                 }
 
-                for (int row = 0; row < rows; row++){
-                    var currentRow = new ProfileRow();
-                    for (int col = 0; col < columns; col++)
-                    {
-                        currentRow.Cells.Add(_profileCells.ElementAt((row * columns) + col));
-                    }
-                    LandscapeRows.Add(currentRow);
-                }
+                SetRowsAndColumns(rows, columns, LandscapeRows);
+                SetRowsAndColumns(columns, rows, PortraitRows);
 
-                var temp = rows;
-                rows = columns;
-                columns = temp;
-
-				for (int row = 0; row < rows; row++)
-				{
-					var currentRow = new ProfileRow();
-					for (int col = 0; col < columns; col++)
-					{
-						currentRow.Cells.Add(_profileCells.ElementAt((row * columns) + col));
-					}
-					PortraitRows.Add(currentRow);
-				}
             }
             catch (Exception e)
             {
@@ -173,6 +154,20 @@ namespace WillowTree.NameGame.Core.ViewModels
                 Loading = false;
                 if (_mode == Enumerations.GameModes.Timed && !Error)
                     await StartTimer();
+            }
+        }
+
+        void SetRowsAndColumns(int rows, int columns, ObservableCollection<ProfileRow> profileRows)
+        {
+            for (int i = 0; i < rows; i++)
+            {
+                ProfileRow currentRow = new ProfileRow();
+                for (int j = 0; j < columns; j++)
+                {
+                    if ((i * columns) + j < _totalCells)
+                        currentRow.Cells.Add(_profileCells.ElementAt((i * columns) + j));
+                }
+                profileRows.Add(currentRow);
             }
         }
 
@@ -224,7 +219,7 @@ namespace WillowTree.NameGame.Core.ViewModels
             var currentRows = rows;
             var columns = currentColumns;
             var barrier = Math.Sqrt(cellPlaces);
-            while (currentRows < barrier)
+            while (currentRows <= barrier)
             {
                 currentColumns = cellPlaces / currentRows;
                 if (cellPlaces % currentRows == 0)
@@ -244,7 +239,7 @@ namespace WillowTree.NameGame.Core.ViewModels
                 return true;
 
             var boundary = Math.Sqrt(number);
-            for (int i = 3; i < boundary; i+=2)
+            for (int i = 2; i <= boundary; i+=2)
             {
                 if (number % i == 0)
                     return false;

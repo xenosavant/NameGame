@@ -75,9 +75,7 @@
         android:orientation="vertical"
         android:layout_height="0dp"
         android:layout_width="match_parent"
-        android:layout_weight="8"
-        android:paddingRight="10px"
-        android:paddingLeft="10px">
+        android:layout_weight="8">
         <Mvx.MvxLinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
