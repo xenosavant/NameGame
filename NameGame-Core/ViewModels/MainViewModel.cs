@@ -103,40 +103,23 @@ namespace WillowTree.NameGame.Core.ViewModels
                 
 				var client = new HttpClient();
 
+                List<Task> tasks = new List<Task>();
+                Parallel.ForEach(profiles, (profile) => {
+
+
+                });
+				Stopwatch sw = new Stopwatch();
+				sw.Start();
                 for (int i = 0; i < profiles.Count(); i++)
                 {
                     // Create a cell object from the profile
-                    Profile profile = profiles.ElementAt(i);
-                    var profileCell = new ProfileCell()
-                    {
-                        FullName = profile.FullName,
-                        Correct = profile.Equals(correctProfile) ? true : false,
-                        Clicked = false,
-                        Size = new Scaling() { Width = (int)size, Height = (int)size },
-                        Visible = true,
-                    };
-
-					var imageResponse = await client.GetAsync("http:" + profile.Headshot.Url);
 
                     // Start a new thread to process the image for each profile and await them
-                    await Task.Run(async () =>
-                    {
-                        using (Stream stream = await imageResponse.Content.ReadAsStreamAsync())
-                        using (MemoryStream memStream = new MemoryStream())
-                        {
-                            stream.CopyTo(memStream);
-
-                            // If the image is not square, crop with the imageService
-                            if (profile.Headshot.Width != profile.Headshot.Height)
-                                profileCell.Image = await _imageService.CropImage(memStream.ToArray());
-                            else profileCell.Image = memStream.ToArray();
-                        }
-                    });
-
+                    tasks.Add(SetupRow(profiles.ElementAt(i), correctProfile, client, size));
                     // Add the cells to the concurrent bag rows for view presentation
-                    _profileCells.Add(profileCell);
                 }
-
+				await Task.WhenAll(tasks);
+				time = sw.Elapsed;
                 SetRowsAndColumns(rows, columns, LandscapeRows);
                 SetRowsAndColumns(columns, rows, PortraitRows);
 
@@ -156,6 +139,33 @@ namespace WillowTree.NameGame.Core.ViewModels
                     await StartTimer();
             }
         }
+
+        async Task SetupRow(Profile profile, Profile correctProfile, HttpClient client, double size)
+        {
+			var profileCell = new ProfileCell()
+			{
+				FullName = profile.FullName,
+				Correct = profile.Equals(correctProfile) ? true : false,
+				Clicked = false,
+				Size = new Scaling() { Width = (int)size, Height = (int)size },
+				Visible = true
+			};
+			var imageResponse = await client.GetAsync("http:" + profile.Headshot.Url);
+			using (Stream stream = await imageResponse.Content.ReadAsStreamAsync())
+			using (MemoryStream memStream = new MemoryStream())
+			{
+				stream.CopyTo(memStream);
+
+				// If the image is not square, crop with the imageService
+				if (profile.Headshot.Width != profile.Headshot.Height)
+					profileCell.Image = await _imageService.CropImage(memStream.ToArray());
+				else profileCell.Image = memStream.ToArray();
+			}
+			_profileCells.Add(profileCell);
+
+        }
+
+        private TimeSpan time; 
 
         void SetRowsAndColumns(int rows, int columns, ObservableCollection<ProfileRow> profileRows)
         {
@@ -186,7 +196,8 @@ namespace WillowTree.NameGame.Core.ViewModels
             // if any were answered calculate the score and update the ViewModel score value
             if (TotalAnswers > 0)
                 PercentCorrect = ((float)CorrectAnswers / (float)TotalAnswers) * (float)100;
-            Score = String.Format("{0}% Correct", Math.Floor(PercentCorrect));
+            //Score = String.Format("{0}% Correct", Math.Floor(PercentCorrect));
+            Score = String.Format("Took {0}", time.TotalMilliseconds);
         }
 
         // See if there are more than 1 incorrect cells that are unselected and still visible.
